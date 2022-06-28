@@ -5,9 +5,19 @@ import './App.css';
 
 function App() {
   const [coins, updateCoins] = useState([]);
+  const [input, updateInput] = useState({ limit: 5, start: 0 });
+
+  function updateInputValues(type, value) {
+    updateInput({ ...input, [type]: value });
+  }
 
   async function fetchCoins() {
-    const data = await API.get('cryptoapi', '/coins');
+    const { limit, start } = input;
+    const data = await API.get(
+      'cryptoapi',
+      `/coins?limit=${limit}&start=${start}`
+    );
+    console.log(data);
     updateCoins(data.coins);
   }
 
@@ -17,12 +27,21 @@ function App() {
 
   return (
     <div className='App'>
+      <input
+        onChange={(e) => updateInputValues('limit', e.target.value)}
+        placeholder='limit'
+      />
+      <input
+        onChange={(e) => updateInputValues('limit', e.target.value)}
+        placeholder='start'
+      />
+      <button onClick={fetchCoins}>Fetch Coins</button>
       {coins.map((coin, index) => (
         <div key={index}>
           <h2>
             {coin.name} - {coin.symbol}
           </h2>
-          <h5>${coin.price_use}</h5>
+          <h5>${coin.price_usd}</h5>
         </div>
       ))}
     </div>
